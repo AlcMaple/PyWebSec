@@ -10,8 +10,10 @@ PyWebSec 是一个轻量级的网站安全防护系统，设计用于加强各�
 - [安装方法](#安装方法)
 - [使用方法](#使用方法)
 - [项目进度追踪](#项目进度追踪)
+    - [功能开发](#功能开发)
+    - [文档和示例](#文档和示例)
+    - [测试和验证](#测试和验证)
 - [贡献指南](#贡献指南)
-- [许可证](#许可证)
 
 ## 项目介绍
 
@@ -24,14 +26,14 @@ PyWebSec/
 ├── pyweb_sec/               # 核心模块
 │   ├── __init__.py          # 模块初始化
 │   ├── middleware.py        # 核心安全中间件
-│   ├── proxy.py             # 反向代理组件（计划中）
+│   ├── proxy.py             # 反向代理组件
 │   ├── filters/             # 安全过滤器模块
 │   │   ├── __init__.py
 │   │   ├── csrf.py          # CSRF 防护
 │   │   ├── sql_injection.py # SQL 注入防护
 │   │   ├── xss.py           # XSS 防护
-│   │   ├── ip_filter.py     # IP 过滤（计划中）
-│   │   └── rate_limit.py    # 速率限制（计划中）
+│   │   ├── ip_filter.py     # IP 过滤
+│   │   └── rate_limit.py    # 速率限制
 │   └── utils/               # 通用工具
 │       ├── __init__.py
 │       ├── config.py        # 配置管理
