@@ -1,0 +1,9 @@
+enabled_filters:
+  - sql_injection
+  - xss
+rate_limit:
+  enabled: true
+  requests_per_minute: 100
+logging:
+  level: DEBUG
+  file: security.log
