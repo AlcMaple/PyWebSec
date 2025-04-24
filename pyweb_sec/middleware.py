@@ -73,6 +73,27 @@ class SecurityMiddleware:
                         )
 
                     filters["ip_filter"] = ip_filter
+                elif filter_name == "rate_limit":
+                    from .filters.rate_limit import RateLimitFilter
+
+                    # 配置速率限制参数
+                    requests_per_minute = self.config.get(
+                        "rate_limit.requests_per_minute", 60
+                    )
+                    window_size = self.config.get("rate_limit.window_size", 60)
+
+                    rate_filter = RateLimitFilter(
+                        self.logger,
+                        requests_per_minute=requests_per_minute,
+                        window_size=window_size,
+                    )
+
+                    # 配置速率限制白名单
+                    whitelist = self.config.get("rate_limit.whitelist", [])
+                    for ip in whitelist:
+                        rate_filter.add_to_whitelist(ip)
+
+                    filters["rate_limit"] = rate_filter
                 # 可在此处添加其他过滤器
                 else:
                     self.logger.log_error(f"未知过滤器: {filter_name}")
@@ -148,7 +169,22 @@ class SecurityMiddleware:
         Returns:
             The response from the wrapped application.
         """
-        # IP过滤（应在其他检查之前）
+        # 速率限制检查（应在所有检查之前）
+        if "rate_limit" in self.filters:
+            is_allowed, headers = self.filters["rate_limit"].check_request(environ)
+            if not is_allowed:
+                status = "429 Too Many Requests"
+                response_headers = [("Content-type", "text/plain")]
+
+                # 添加速率限制相关的响应头
+                if headers:
+                    for key, value in headers.items():
+                        response_headers.append((key, value))
+
+                start_response(status, response_headers)
+                return [f"请求频率过高，请稍后再试。".encode("utf-8")]
+
+        # IP过滤（应在其他安全检查之前）
         if "ip_filter" in self.filters:
             is_allowed, reason = self.filters["ip_filter"].check_request(environ)
             if not is_allowed:
